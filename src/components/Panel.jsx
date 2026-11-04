@@ -1,16 +1,19 @@
 import { useState } from 'react'
 
-function Panel({ title, defaultOpen = true, children }) {
+function Panel({ title, tag, variant, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <section className="panel">
+    <section className={`panel panel-${variant}`}>
       <button
         className="panel-header"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
-        <span>{title}</span>
+        <span className="panel-title">
+          {title}
+          <span className="panel-tag">{tag}</span>
+        </span>
         <span>{open ? '−' : '+'}</span>
       </button>
       {open && <div className="panel-body">{children}</div>}
