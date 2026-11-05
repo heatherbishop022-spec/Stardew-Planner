@@ -4,7 +4,7 @@ import TaskForm from './TaskForm'
 import TaskItem from './TaskItem'
 import { sortTasks, SORT_OPTIONS } from '../utils/stardew'
 
-function TaskPanel({ world, taskApi }) {
+function TaskPanel({ world, taskApi, focusTaskId }) {
   const { tasks, addTask, updateTask, toggleTask, deleteTask } = taskApi
   const [sortBy, setSortBy] = useState('Order added')
   const sorted = sortTasks(tasks, sortBy)
@@ -22,6 +22,7 @@ function TaskPanel({ world, taskApi }) {
             key={t.id}
             task={t}
             world={world}
+            focused={t.id === focusTaskId}
             onToggle={toggleTask}
             onUpdate={updateTask}
             onDelete={deleteTask}

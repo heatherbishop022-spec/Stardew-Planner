@@ -102,3 +102,11 @@ export function formatTaskDate(world, date) {
     day: 'numeric',
   })
 }
+
+export function festivalDays(festival) {
+  const nums = (festival.day.match(/\d+/g) || []).map(Number)
+  if (nums.length === 2) {
+    return Array.from({ length: nums[1] - nums[0] + 1 }, (_, i) => nums[0] + i)
+  }
+  return nums
+}

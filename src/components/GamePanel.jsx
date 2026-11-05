@@ -63,7 +63,6 @@ function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysErr
         birthdaysError={birthdaysError}
         season={season}
         weather={weather}
-        showPortraits
       />
     </Panel>
   )

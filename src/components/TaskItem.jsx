@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { formatTaskDate, PRIORITIES } from '../utils/stardew'
 
-function TaskItem({ task, world, onToggle, onUpdate, onDelete }) {
+function TaskItem({ task, world, focused, onToggle, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(task.text)
   const [priority, setPriority] = useState(task.priority)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (focused) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [focused])
 
   function startEdit() {
     setText(task.text)
@@ -18,11 +23,17 @@ function TaskItem({ task, world, onToggle, onUpdate, onDelete }) {
     setEditing(false)
   }
 
-  const cls = task.done ? 'task task-done' : `task task-${task.priority.toLowerCase()}`
+  const cls = [
+    'task',
+    task.done ? 'task-done' : `task-${task.priority.toLowerCase()}`,
+    focused && 'task-focus',
+  ]
+    .filter(Boolean)
+    .join(' ')
   const dateLabel = formatTaskDate(world, task.date)
 
   return (
-    <div className={cls}>
+    <div className={cls} ref={ref}>
       <input
         type="checkbox"
         checked={task.done}

@@ -497,3 +497,151 @@ h1 {
 .tab {
   white-space: nowrap;
 }
+
+.tab {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.cal-wrap {
+  height: 360px;
+  overflow-y: auto;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cal-head {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cal-day {
+  height: 44px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.cal-day:hover {
+  border-color: var(--accent);
+}
+
+.cal-day.selected {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cal-day.today {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.cal-dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.dot-task {
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  box-sizing: border-box;
+}
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+}
+
+.cal-detail {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.cal-detail h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.cal-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+}
+
+.cal-item .tag {
+  margin-top: 0;
+}
+
+.cal-item .portrait {
+  width: 36px;
+  height: 36px;
+  margin-top: 0;
+  flex: none;
+}
+
+.cal-done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.cal-link {
+  width: 100%;
+  padding: 4px 6px;
+  margin: 4px 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cal-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.cal-go {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.task-focus {
+  box-shadow: 0 0 0 2px var(--accent);
+}

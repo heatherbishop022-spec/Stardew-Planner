@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Card from './Card'
 
-function Portrait({ name, src }) {
+export function Portrait({ name, src }) {
   const [failed, setFailed] = useState(false)
   if (!src || failed) {
     return <span className="portrait portrait-fallback">{name[0]}</span>
