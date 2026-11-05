@@ -13,7 +13,11 @@ function FishList({ fish }) {
         >
           <p className="meta">{f.locations.join(', ')}</p>
           <p className="meta">{f.time === 'Any' ? 'Any time' : f.time}</p>
-          {f.bundle && <span className="tag">Bundle fish</span>}
+          {f.bundle && (
+            <span className="tag" title={f.bundles.join(', ')}>
+              Bundle fish
+            </span>
+          )}
         </Card>
       ))}
     </div>

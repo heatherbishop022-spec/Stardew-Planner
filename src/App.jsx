@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { fetchFish, fetchCrops, fetchBirthdays } from './api/wiki'
 import GamePanel from './components/GamePanel'
 import RealPanel from './components/RealPanel'
+import { useForage } from './hooks/useForage'
 
 function App() {
   const [fish, setFish] = useState([])
@@ -17,7 +18,8 @@ function App() {
     fetchBirthdays().then(setBirthdays).catch((err) => setBirthdaysError(err.message))
   }, [])
 
-  const shared = { fish, fishError, crops, cropsError, birthdays, birthdaysError }
+  const { forage, forageError } = useForage()
+  const shared = { fish, fishError, crops, cropsError, birthdays, birthdaysError, forage, forageError }
 
   return (
     <main className="app">

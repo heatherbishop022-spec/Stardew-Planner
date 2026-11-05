@@ -21,6 +21,18 @@ function parsePrice(text) {
   return match ? Number(match[1]) : null
 }
 
+// Pulls bundle names out of a "Used In" cell: ['Fall Foraging Bundle', ...]
+function bundleNames(cell) {
+  if (!cell) return []
+  const fromLinks = [...cell.querySelectorAll('a')]
+    .map((a) => a.textContent.trim())
+    .filter((t) => /bundle/i.test(t))
+  const names = fromLinks.length
+    ? fromLinks
+    : cell.textContent.match(/[A-Z][\w']*(?: [A-Z][\w']*)* Bundle/g) || []
+  return [...new Set(names)]
+}
+
 export async function fetchFish() {
   const url = `${WIKI_URL}?action=parse&page=Fish&prop=text&format=json&origin=*`
   const res = await fetch(url)
@@ -53,6 +65,7 @@ export async function fetchFish() {
         return
       }
       const text = (i) => (i === -1 ? '' : cells[i].textContent.trim())
+      const bundles = bundleNames(usedI === -1 ? null : cells[usedI])
       fish.push({
         name: text(nameI),
         price: parsePrice(cells[priceI].textContent),
@@ -63,7 +76,8 @@ export async function fetchFish() {
         time: text(timeI).replace(/(am|pm)(?=\d)/gi, '$1, '),
         seasons: parseSeasons(text(seasonI)),
         weather: parseWeather(text(weatherI)),
-        bundle: /bundle/i.test(text(usedI)),
+        bundles,
+        bundle: bundles.length > 0,
       })
     })
   })
@@ -122,13 +136,14 @@ export async function fetchCrops() {
       const prices = [...sellCell.textContent.matchAll(/(\d[\d,]*)g/g)].map((m) =>
         Number(m[1].replace(/,/g, ''))
       )
-
+      const bundles = bundleNames(usedCell)
       crops.push({
         name,
         season: season || 'Other',
         price: prices[0] ?? null,
         maxPrice: prices.length > 1 ? prices[prices.length - 1] : null,
-        bundle: usedCell ? /bundle/i.test(usedCell.textContent) : false,
+        bundles,
+        bundle: bundles.length > 0,
       })
     })
   })
@@ -251,4 +266,83 @@ export async function fetchBirthdays() {
     '| portraits matched:', birthdays.filter((b) => b.portrait).length
   )
   return birthdays
+}
+
+const ALL_SEASONS = ['Spring', 'Summer', 'Fall', 'Winter']
+
+const FORAGE_SECTIONS = {
+  Basic: ALL_SEASONS,
+  Spring: ['Spring'],
+  Summer: ['Summer'],
+  Fall: ['Fall'],
+  Winter: ['Winter'],
+  'The Beach': ALL_SEASONS,
+  'The Desert': ALL_SEASONS,
+}
+
+// "Pelican Town (100%) Bus Stop (45%)" -> ['Pelican Town', 'Bus Stop']
+function foundLines(cell) {
+  const copy = cell.cloneNode(true)
+  copy.querySelectorAll('br').forEach((b) => b.replaceWith('\n'))
+  copy.querySelectorAll('li, div, p').forEach((el) => el.append('\n'))
+  return copy.textContent
+    .replace(/\(\d+%\)/g, '\n')
+    .split('\n')
+    .map((s) => s.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
+
+export async function fetchForage() {
+  const doc = await fetchPageDoc('Foraging')
+  const items = new Map()
+
+  for (const h of doc.querySelectorAll('h3')) {
+    const label = h.textContent.replace('[edit]', '').trim()
+    const seasons = FORAGE_SECTIONS[label]
+    if (!seasons) continue
+
+    const start = h.closest('.mw-heading') || h
+    const table = start.nextElementSibling
+    if (!table || table.tagName !== 'TABLE') continue
+
+    for (const row of table.querySelectorAll('tr')) {
+      if (row.closest('table') !== table || row.querySelector('th')) continue
+      const cells = [...row.children]
+      if (cells.length < 4) continue
+
+      const name = cells[1].textContent.trim()
+      if (!name) continue
+
+      const priceCell = cells.slice(2).find((c) => /^\s*\d+\s*g/.test(c.textContent))
+      const price = priceCell ? Number(priceCell.textContent.match(/\d+/)[0]) : null
+
+      let places = []
+      if (label === 'The Beach') places = ['The Beach']
+      else if (label === 'The Desert') places = ['The Desert']
+      else if (cells[2] !== priceCell) places = foundLines(cells[2])
+
+      const usedIn = cells[cells.length - 1]
+      const bundles = [
+        ...new Set(
+          [...usedIn.querySelectorAll('a')]
+            .map((a) => a.textContent.trim())
+            .filter((t) => /bundle/i.test(t))
+        ),
+      ]
+
+      let item = items.get(name)
+      if (!item) {
+        item = { name, price, seasons: [], places: {}, bundles: [], bundle: false }
+        items.set(name, item)
+      }
+      for (const s of seasons) {
+        if (!item.seasons.includes(s)) item.seasons.push(s)
+        item.places[s] = places
+      }
+      for (const b of bundles) if (!item.bundles.includes(b)) item.bundles.push(b)
+      item.bundle = item.bundles.length > 0
+    }
+  }
+
+  return [...items.values()].sort((a, b) => a.name.localeCompare(b.name))
 }

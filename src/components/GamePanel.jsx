@@ -12,7 +12,7 @@ import {
   festivalText,
 } from '../utils/stardew'
 
-function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysError }) {
+function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysError, forage, forageError  }) {
   const [season, setSeason] = useState('Spring')
   const [weather, setWeather] = useState('Sunny')
   const [luck, setLuck] = useState('Neutral')
@@ -61,6 +61,8 @@ function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysErr
         cropsError={cropsError}
         birthdays={birthdays}
         birthdaysError={birthdaysError}
+        forage={forage}
+        forageError={forageError}
         season={season}
         weather={weather}
       />

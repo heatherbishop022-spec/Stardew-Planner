@@ -22,7 +22,7 @@ function getLocation() {
   })
 }
 
-function RealPanel({ fish, fishError, crops, cropsError }) {
+function RealPanel({ fish, fishError, crops, cropsError, forage, forageError }) {
   const [live, setLive] = useState(null)
   const [error, setError] = useState(null)
   const taskApi = useTasks('tasks-real')
@@ -79,6 +79,8 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
         fishError={fishError}
         crops={crops}
         cropsError={cropsError}
+        forage={forage}
+        forageError={forageError}
         season={season}
         weather={stardewWeather}
       />

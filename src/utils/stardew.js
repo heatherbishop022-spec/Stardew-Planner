@@ -110,3 +110,9 @@ export function festivalDays(festival) {
   }
   return nums
 }
+
+export function filterForage(forage, season) {
+  return forage
+    .filter((f) => f.seasons.includes(season))
+    .map((f) => ({ ...f, locations: f.places[season] || [] }))
+}

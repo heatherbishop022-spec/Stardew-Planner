@@ -4,13 +4,15 @@ import CropList from './CropList'
 import GameCalendar from './GameCalendar'
 import RealCalendar from './RealCalendar'
 import TaskPanel from './TaskPanel'
-import { filterFish, filterCrops } from '../utils/stardew'
+import ForageList from './ForageList'
+import { filterFish, filterCrops, filterForage } from '../utils/stardew'
 
 function StardewInfo({
   world,
   taskApi,
   fish, fishError,
   crops, cropsError,
+  forage = [], forageError,
   birthdays = [], birthdaysError,
   season, weather,
 }) {
@@ -25,6 +27,7 @@ function StardewInfo({
 
   const visibleFish = filterFish(fish, season, weather, showGinger)
   const visibleCrops = filterCrops(crops, season)
+  const visibleForage = filterForage(forage, season)
   const raining = weather === 'Rain' || weather === 'Storm'
   const openTasks = taskApi.tasks.filter((t) => !t.done).length
   const doneTasks = taskApi.tasks.length - openTasks
@@ -32,6 +35,7 @@ function StardewInfo({
   const tabs = [
     { id: 'fish', label: 'Fish', count: weather ? visibleFish.length : '–' },
     { id: 'crops', label: 'Crops', count: visibleCrops.length },
+    { id: 'forage', label: 'Forage', count: visibleForage.length },
     { id: 'calendar', label: 'Calendar' },
     { id: 'tasks', label: 'Tasks', count: openTasks },
   ]
@@ -45,6 +49,7 @@ function StardewInfo({
     const status = {
       fish: { error: fishError, loading: fish.length === 0 },
       crops: { error: cropsError, loading: crops.length === 0 },
+      forage: { error: forageError, loading: forage.length === 0 },
       calendar:
         world === 'game'
           ? { error: birthdaysError, loading: birthdays.length === 0 }
@@ -69,6 +74,7 @@ function StardewInfo({
         <div className="fish-scroll">
           {tab === 'fish' && <FishList fish={visibleFish} />}
           {tab === 'crops' && <CropList crops={visibleCrops} />}
+          {tab === 'forage' && <ForageList forage={visibleForage} />}
         </div>
       )
   }
@@ -111,6 +117,7 @@ function StardewInfo({
         {tab === 'crops' && (
           <span>{raining ? 'Rain waters your crops today.' : 'Crops need watering today.'}</span>
         )}
+        {tab === 'forage' && <span>Forage you can find outdoors in {season}.</span>}
         {tab === 'calendar' && (
           <span className="cal-legend">
             <span>
