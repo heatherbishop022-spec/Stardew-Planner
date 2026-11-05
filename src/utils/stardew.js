@@ -41,3 +41,64 @@ export const LUCK_TIPS = {
 export function filterCrops(crops, season) {
   return crops.filter((c) => c.season === season)
 }
+
+export const FESTIVALS = {
+  Spring: [
+    { name: 'Egg Festival', day: '13' },
+    { name: 'Flower Dance', day: '24' },
+  ],
+  Summer: [
+    { name: 'Luau', day: '11' },
+    { name: 'Dance of the Moonlight Jellies', day: '28' },
+  ],
+  Fall: [
+    { name: 'Stardew Valley Fair', day: '16' },
+    { name: "Spirit's Eve", day: '27' },
+  ],
+  Winter: [
+    { name: 'Festival of Ice', day: '8' },
+    { name: 'Night Market', day: '15–17' },
+    { name: 'Feast of the Winter Star', day: '25' },
+  ],
+}
+
+export function festivalText(season) {
+  const list = FESTIVALS[season] || []
+  if (list.length === 0) return 'No festivals this season.'
+  return (
+    `${season} festivals: ` +
+    list.map((f) => `${f.name} (day ${f.day})`).join(', ') +
+    '.'
+  )
+}
+
+export function filterBirthdays(birthdays, season) {
+  return birthdays.filter((b) => b.season === season).sort((a, b) => a.day - b.day)
+}
+
+export const PRIORITIES = ['High', 'Medium', 'Low']
+export const SORT_OPTIONS = ['Order added', 'Priority', 'Completed']
+
+const PRIORITY_RANK = { High: 0, Medium: 1, Low: 2 }
+
+export function sortTasks(tasks, sortBy) {
+  const open = tasks.filter((t) => !t.done)
+  const done = tasks
+    .filter((t) => t.done)
+    .sort((a, b) => a.completedAt - b.completedAt)
+
+  if (sortBy === 'Priority') {
+    open.sort((a, b) => PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority])
+  }
+  // "Completed" puts finished tasks first; otherwise they sink to the bottom
+  return sortBy === 'Completed' ? [...done, ...open] : [...open, ...done]
+}
+
+export function formatTaskDate(world, date) {
+  if (!date) return ''
+  if (world === 'game') return `${date.season} ${date.day}`
+  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  })
+}

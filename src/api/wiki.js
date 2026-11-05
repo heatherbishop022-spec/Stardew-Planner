@@ -178,3 +178,77 @@ export async function fetchCrops() {
   console.log('Loaded crops by season:', counts)
   return crops
 }
+
+const WIKI_ORIGIN = 'https://stardewvalleywiki.com'
+
+async function fetchPageDoc(page) {
+  const url = `${WIKI_URL}?action=parse&page=${page}&prop=text&format=json&origin=*`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Wiki request failed')
+  const data = await res.json()
+  const doc = new DOMParser().parseFromString(data.parse.text['*'], 'text/html')
+  doc.querySelectorAll('style').forEach((s) => s.remove())
+  return doc
+}
+
+export async function fetchBirthdays() {
+  const [calendar, villagers] = await Promise.all([
+    fetchPageDoc('Calendar'),
+    fetchPageDoc('Villagers').catch(() => null),
+  ])
+
+  const portraits = {}
+  villagers?.querySelectorAll('div.thumb').forEach((box) => {
+    const name = box.querySelector('a[title]')?.getAttribute('title')
+    const src = box.querySelector('img')?.getAttribute('src')
+    if (name && src) portraits[name] = WIKI_ORIGIN + src
+  })
+
+  const birthdays = []
+  let season = null
+
+    const isSeasonLink = (a) => /^(Spring|Summer|Fall|Winter)\b/.test(a.getAttribute('title'))
+    const villagerLink = (cell) =>
+    [...cell.querySelectorAll('a[title]')].find((a) => !isSeasonLink(a))
+
+  calendar.querySelectorAll('h2, table.sortable').forEach((el) => {
+    if (el.tagName === 'H2') {
+      season = SEASONS.find((s) => el.textContent.includes(s)) || null
+      return
+    }
+    if (!season) return
+
+    el.querySelectorAll('tr').forEach((row) => {
+      const cells = [...row.children]
+      const nameCell = cells.find((c) => villagerLink(c))
+      const dateCell = cells.find((c) => c !== nameCell && /\d/.test(c.textContent))
+      if (!nameCell || !dateCell) return
+
+      const name = villagerLink(nameCell).getAttribute('title')
+      const day = parseInt(dateCell.textContent.match(/\d+/)[0], 10)
+      const icon = nameCell.querySelector('img')?.getAttribute('src')
+
+      birthdays.push({
+        name,
+        season,
+        day,
+        icon: icon ? WIKI_ORIGIN + icon : null,
+        portrait: portraits[name] || null,
+      })
+    })
+  })
+
+  if (birthdays.length === 0) {
+    const sample = calendar.querySelector('table.sortable')
+    console.log(
+      'No birthdays parsed. Sample:',
+      sample?.querySelectorAll('tr')[1]?.outerHTML.replace(/\s+/g, ' ').slice(0, 600)
+    )
+  }
+
+  console.log(
+    'Loaded birthdays:', birthdays.length,
+    '| portraits matched:', birthdays.filter((b) => b.portrait).length
+  )
+  return birthdays
+}

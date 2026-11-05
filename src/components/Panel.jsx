@@ -4,7 +4,7 @@ function Panel({ title, tag, variant, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <section className={`panel panel-${variant}`}>
+        <section className={`panel panel-${variant}${open ? '' : ' panel-closed'}`}>
       <button
         className="panel-header"
         onClick={() => setOpen(!open)}

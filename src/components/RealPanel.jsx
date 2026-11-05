@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Panel from './Panel'
 import StardewInfo from './StardewInfo'
+import { useTasks } from '../hooks/useTasks'
 import { toStardewWeather, toStardewSeason } from '../utils/stardew'
 
 const FALLBACK = { latitude: 35.22, longitude: -97.44 }
@@ -20,8 +21,9 @@ function getLocation() {
 }
 
 function RealPanel({ fish, fishError, crops, cropsError }) {
-  const [weather, setWeather] = useState(null)
+  const [live, setLive] = useState(null)
   const [error, setError] = useState(null)
+  const taskApi = useTasks('tasks-real')
 
   useEffect(() => {
     async function loadWeather() {
@@ -31,7 +33,7 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
         const res = await fetch(url)
         if (!res.ok) throw new Error('Weather request failed')
         const data = await res.json()
-        setWeather(data.current)
+        setLive(data.current)
       } catch (err) {
         setError(err.message)
       }
@@ -40,31 +42,29 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
   }, [])
 
   const season = toStardewSeason(new Date())
+  const stardewWeather = live ? toStardewWeather(live.weather_code) : null
 
   return (
     <Panel title="Real Life" tag="Live data" variant="real">
-      {error && <p className="error">Weather error: {error}</p>}
-      {!error && !weather && <p>Loading weather...</p>}
-      {weather && (
-        <>
-          <div className="summary">
-            <span className="chip">{weather.temperature_2m}°F</span>
-            <span className="chip">{toStardewWeather(weather.weather_code)}</span>
-            <span className="chip">{season}</span>
-          </div>
-
-          <p className="note">Live weather from Open-Meteo. Reload to update.</p>
-
-          <StardewInfo 
-            fish={fish} 
-            fishError={fishError} 
-            crops={crops} 
-            cropsError={cropsError} 
-            season={season} 
-            weather={toStardewWeather(weather.weather_code)} 
-            />
-        </>
-      )}
+      <div className="summary">
+        {live && <span className="chip">{live.temperature_2m}°F</span>}
+        {stardewWeather && <span className="chip">{stardewWeather}</span>}
+        <span className="chip">{season}</span>
+      </div>
+      <p className="note">
+        {error ? `Weather error: ${error}` : 'Live weather from Open-Meteo. Reload to update.'}
+      </p>
+      <p className="note note-tall">Real-world holidays: coming soon.</p>
+      <StardewInfo
+        world="real"
+        taskApi={taskApi}
+        fish={fish}
+        fishError={fishError}
+        crops={crops}
+        cropsError={cropsError}
+        season={season}
+        weather={stardewWeather}
+      />
     </Panel>
   )
 }

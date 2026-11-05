@@ -275,3 +275,225 @@ h1 {
 .tab-extra .toggle {
   margin: 0;
 }
+
+.note-tall {
+  height: 60px;
+  align-items: flex-start;
+}
+.columns {
+  align-items: stretch;
+}
+
+.panel-closed {
+  align-self: start;
+}
+
+.portrait {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin-top: 6px;
+  border-radius: 6px;
+  display: block;
+}
+
+.portrait-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+  image-rendering: auto;
+}
+
+.tip-box {
+  display: flex;
+  flex-direction: column;
+  height: 140px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.tip-text {
+  flex: 1;
+  margin: 0;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.tip-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tip-next {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tabs {
+  flex-wrap: wrap;
+}
+
+.tasks-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 360px;
+}
+
+.task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.task-form input[type="text"] {
+  flex: 1 1 100%;
+}
+
+.task-form input,
+.task-form select,
+.task-edit input,
+.task-edit select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-width: 0;
+}
+
+.add-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.task-toolbar {
+  margin-bottom: 8px;
+  max-width: 180px;
+}
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.task {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 10px;
+}
+
+.task input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.task-high {
+  border-left-color: #c0392b;
+}
+
+.task-medium {
+  border-left-color: #d68910;
+}
+
+.task-low {
+  border-left-color: #7f8c8d;
+}
+
+.task-done {
+  opacity: 0.55;
+  border-left-color: var(--border);
+}
+
+.task-done .task-text {
+  text-decoration: line-through;
+}
+
+.task-body {
+  min-width: 0;
+}
+
+.task-text {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.task-meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.task-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.task-edit {
+  grid-column: 2 / span 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-form input,
+.task-form select,
+.task-form .add-btn,
+.task-edit input,
+.task-edit select {
+  height: 36px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.tab {
+  white-space: nowrap;
+}
