@@ -2,6 +2,7 @@ import { useState } from 'react'
 import FishList from './FishList'
 import CropList from './CropList'
 import GameCalendar from './GameCalendar'
+import RealCalendar from './RealCalendar'
 import TaskPanel from './TaskPanel'
 import { filterFish, filterCrops } from '../utils/stardew'
 
@@ -31,7 +32,7 @@ function StardewInfo({
   const tabs = [
     { id: 'fish', label: 'Fish', count: weather ? visibleFish.length : '–' },
     { id: 'crops', label: 'Crops', count: visibleCrops.length },
-    ...(world === 'game' ? [{ id: 'calendar', label: 'Calendar' }] : []),
+    { id: 'calendar', label: 'Calendar' },
     { id: 'tasks', label: 'Tasks', count: openTasks },
   ]
 
@@ -44,13 +45,25 @@ function StardewInfo({
     const status = {
       fish: { error: fishError, loading: fish.length === 0 },
       crops: { error: cropsError, loading: crops.length === 0 },
-      calendar: { error: birthdaysError, loading: birthdays.length === 0 },
+      calendar:
+        world === 'game'
+          ? { error: birthdaysError, loading: birthdays.length === 0 }
+          : { error: null, loading: false },
     }[tab]
 
     if (status.error) body = <p className="error">Error: {status.error}</p>
     else if (status.loading) body = <p>Loading...</p>
+    else if (tab === 'calendar' && world === 'game')
+      body = (
+        <GameCalendar
+          season={season}
+          birthdays={birthdays}
+          taskApi={taskApi}
+          onOpenTask={openTask}
+        />
+      )
     else if (tab === 'calendar')
-      body = <GameCalendar season={season} birthdays={birthdays} taskApi={taskApi} onOpenTask={openTask} />
+      body = <RealCalendar taskApi={taskApi} onOpenTask={openTask} />
     else
       body = (
         <div className="fish-scroll">
@@ -100,8 +113,12 @@ function StardewInfo({
         )}
         {tab === 'calendar' && (
           <span className="cal-legend">
-            <span><i className="dot" /> birthday or festival</span>
-            <span><i className="dot dot-task" /> task</span>
+            <span>
+              <i className="dot" /> {world === 'game' ? 'birthday or festival' : 'holiday'}
+            </span>
+            <span>
+              <i className="dot dot-task" /> task
+            </span>
           </span>
         )}
         {tab === 'tasks' && (

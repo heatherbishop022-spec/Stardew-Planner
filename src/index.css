@@ -645,3 +645,44 @@ h1 {
 .task-focus {
   box-shadow: 0 0 0 2px var(--accent);
 }
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cal-nav strong {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+.repeat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.task-form .repeat-toggle input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+}
+
+.cal-wrap {
+  max-height: none;
+  overflow: visible;
+}
+
+.cal-detail {
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.task-edit {
+  flex-wrap: wrap;
+}

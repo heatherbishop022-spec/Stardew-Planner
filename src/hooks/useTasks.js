@@ -19,11 +19,11 @@ export function useTasks(storageKey) {
     }
   }, [storageKey, tasks])
 
-  function addTask({ text, priority, date }) {
+  function addTask({ text, priority, date, repeat = false }) {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     setTasks((prev) => [
       ...prev,
-      { id, text, priority, date, done: false, completedAt: null },
+      { id, text, priority, date, repeat, done: false, completedAt: null },
     ])
   }
 

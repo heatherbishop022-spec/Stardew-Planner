@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import Panel from './Panel'
 import StardewInfo from './StardewInfo'
 import { useTasks } from '../hooks/useTasks'
-import { toStardewWeather, toStardewSeason } from '../utils/stardew'
+import { useHolidays } from '../hooks/useHolidays'
+import { toStardewWeather, toStardewSeason, formatTaskDate } from '../utils/stardew'
+import { toISO } from '../utils/dates'
 
 const FALLBACK = { latitude: 35.22, longitude: -97.44 }
 
@@ -24,6 +26,8 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
   const [live, setLive] = useState(null)
   const [error, setError] = useState(null)
   const taskApi = useTasks('tasks-real')
+  const now = new Date()
+  const { holidays, error: holidayError } = useHolidays(now.getFullYear())
 
   useEffect(() => {
     async function loadWeather() {
@@ -41,8 +45,21 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
     loadWeather()
   }, [])
 
-  const season = toStardewSeason(new Date())
+  const season = toStardewSeason(now)
   const stardewWeather = live ? toStardewWeather(live.weather_code) : null
+
+  const todayISO = toISO(now.getFullYear(), now.getMonth(), now.getDate())
+  const todayHoliday = holidays.find((h) => h.date === todayISO)
+  const nextHoliday = holidays.find((h) => h.date > todayISO)
+
+  let holidayText = 'Loading holidays...'
+  if (holidayError) holidayText = 'Holidays unavailable right now.'
+  else if (holidays.length > 0) {
+    if (todayHoliday) holidayText = `Today is ${todayHoliday.name}.`
+    else if (nextHoliday)
+      holidayText = `Next holiday: ${nextHoliday.name} (${formatTaskDate('real', nextHoliday.date)}).`
+    else holidayText = 'No more holidays this year.'
+  }
 
   return (
     <Panel title="Real Life" tag="Live data" variant="real">
@@ -54,7 +71,7 @@ function RealPanel({ fish, fishError, crops, cropsError }) {
       <p className="note">
         {error ? `Weather error: ${error}` : 'Live weather from Open-Meteo. Reload to update.'}
       </p>
-      <p className="note note-tall">Real-world holidays: coming soon.</p>
+      <p className="note note-tall">{holidayText}</p>
       <StardewInfo
         world="real"
         taskApi={taskApi}
