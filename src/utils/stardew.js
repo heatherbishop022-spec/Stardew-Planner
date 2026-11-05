@@ -27,3 +27,17 @@ export function filterFish(fish, season, weather, showGinger) {
     .filter((f) => f.locations.length > 0)
     .filter((f) => f.seasons.includes(season) && f.weather.includes(fishWeather))
 }
+
+export const LUCK_LEVELS = ['Very lucky', 'Lucky', 'Neutral', 'Unlucky', 'Very unlucky']
+
+export const LUCK_TIPS = {
+  'Very lucky': 'Great day to go mining or dig for artifacts.',
+  Lucky: 'Good day for the mines and foraging.',
+  Neutral: 'A normal day. Nothing special to plan around.',
+  Unlucky: 'Slightly worse odds today. Fine for farm chores.',
+  'Very unlucky': 'Poor odds today. Maybe stay on the farm.',
+}
+
+export function filterCrops(crops, season) {
+  return crops.filter((c) => c.season === season)
+}

@@ -71,3 +71,110 @@ export async function fetchFish() {
   console.log(`Loaded ${fish.length} fish, skipped ${skipped} rows`)
   return fish
 }
+
+export async function fetchCrops() {
+  const url = `${WIKI_URL}?action=parse&page=Crops&prop=text&format=json&origin=*`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Wiki request failed')
+  const data = await res.json()
+  const doc = new DOMParser().parseFromString(data.parse.text['*'], 'text/html')
+  doc.querySelectorAll('style').forEach((s) => s.remove())
+
+  const crops = []
+  let season = null
+
+  doc.querySelectorAll('h2, h3, h4, table.wikitable').forEach((el) => {
+    if (el.tagName !== 'TABLE') {
+      const found = SEASONS.find((s) => el.textContent.includes(s))
+      if (found) season = found
+      else if (el.tagName === 'H2') season = null
+      return
+    }
+
+    const rows = [...el.querySelectorAll('tr')]
+    const headers = [...rows[0].children].map((h) => h.textContent.trim().toLowerCase())
+    const col = (label) => headers.findIndex((h) => h.startsWith(label))
+
+    const seedI = col('seeds')
+    const harvestI = col('harvest')
+    const sellI = col('sells for')
+    const usedI = col('used in')
+    if (seedI === -1 || sellI === -1) return
+
+    rows.slice(1).forEach((row) => {
+      const cells = [...row.children]
+      const shift = cells.length - headers.length
+      if (shift < 0 || shift > 1) return
+
+      const sellCell = cells[sellI + shift]
+      const usedCell = usedI === -1 ? null : cells[usedI + shift]
+
+      const seedName = cells[seedI].textContent.trim().split('\n')[0].trim()
+      const harvest = harvestI === -1 ? null : cells[harvestI]
+      const linkName = harvest?.querySelector('a[title]')?.getAttribute('title')
+      const imgName = harvest
+        ?.querySelector('img')
+        ?.getAttribute('alt')
+        ?.replace(/\.png$/i, '')
+      const name =
+        linkName || imgName || seedName.replace(/\s+(Seeds|Starter|Bulb|Shoot)$/, '')
+
+      const prices = [...sellCell.textContent.matchAll(/(\d[\d,]*)g/g)].map((m) =>
+        Number(m[1].replace(/,/g, ''))
+      )
+
+      crops.push({
+        name,
+        season: season || 'Other',
+        price: prices[0] ?? null,
+        maxPrice: prices.length > 1 ? prices[prices.length - 1] : null,
+        bundle: usedCell ? /bundle/i.test(usedCell.textContent) : false,
+      })
+    })
+  })
+
+  const ALL = ['Spring', 'Summer', 'Fall', 'Winter']
+  const MULTI_SEASON = {
+    'ancient fruit': ['Spring', 'Summer', 'Fall'],
+    'cactus fruit': ALL,
+    'coffee bean': ['Spring', 'Summer'],
+    corn: ['Summer', 'Fall'],
+    fiber: ALL,
+    'qi fruit': ALL,
+    sunflower: ['Summer', 'Fall'],
+    'tea leaves': ['Spring', 'Summer', 'Fall'],
+    wheat: ['Summer', 'Fall'],
+  }
+
+   const original = [...crops]
+  const added = []
+  const notFound = []
+
+  Object.entries(MULTI_SEASON).forEach(([key, seasons]) => {
+    const found = original.find((c) => c.name.toLowerCase() === key)
+    const source = found || {
+      name: key.replace(/\b\w/g, (ch) => ch.toUpperCase()),
+      price: null,
+      maxPrice: null,
+      bundle: false,
+    }
+    if (!found) notFound.push(key)
+
+    seasons.forEach((s) => {
+      const exists = crops.some((o) => o.name === source.name && o.season === s)
+      if (!exists) {
+        crops.push({ ...source, season: s })
+        added.push(`${source.name} → ${s}`)
+      }
+    })
+  })
+  console.log('Multi-season crops added:', added)
+  console.log('Hand-listed (not on wiki page):', notFound)
+
+  const counts = {}
+  crops.forEach((c) => {
+    counts[c.season] = (counts[c.season] || 0) + 1
+  })
+  console.log('Loaded crops by season:', counts)
+  return crops
+}

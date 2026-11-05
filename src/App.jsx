@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { fetchFish } from './api/wiki'
 import GamePanel from './components/GamePanel'
 import RealPanel from './components/RealPanel'
+import { fetchFish, fetchCrops } from './api/wiki'
 
 function App() {
   const [fish, setFish] = useState([])
@@ -13,12 +13,21 @@ function App() {
       .catch((err) => setFishError(err.message))
   }, [])
 
+    const [crops, setCrops] = useState([])
+    const [cropsError, setCropsError] = useState(null)
+
+    useEffect(() => {
+      fetchCrops()
+        .then(setCrops)
+        .catch((err) => setCropsError(err.message))
+    }, [])
+
   return (
     <main className="app">
       <h1>Stardew Valley Planner</h1>
       <div className="columns">
-        <GamePanel fish={fish} fishError={fishError} />
-        <RealPanel fish={fish} fishError={fishError} />
+        <GamePanel fish={fish} fishError={fishError} crops={crops} cropsError={cropsError} />
+        <RealPanel fish={fish} fishError={fishError} crops={crops} cropsError={cropsError} />
       </div>
     </main>
   )

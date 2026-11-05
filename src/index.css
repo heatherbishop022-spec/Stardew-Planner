@@ -224,3 +224,54 @@ h1 {
   background: var(--accent-bg);
   color: var(--accent);
 }
+
+.note {
+  height: 40px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.dropdown {
+  min-width: 0;
+}
+
+.dropdown select {
+  width: 100%;
+  min-width: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.tab {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tab.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tab-extra {
+  height: 28px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.tab-extra .toggle {
+  margin: 0;
+}

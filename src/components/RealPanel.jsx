@@ -19,7 +19,7 @@ function getLocation() {
   })
 }
 
-function RealPanel({ fish, fishError }) {
+function RealPanel({ fish, fishError, crops, cropsError }) {
   const [weather, setWeather] = useState(null)
   const [error, setError] = useState(null)
 
@@ -52,12 +52,17 @@ function RealPanel({ fish, fishError }) {
             <span className="chip">{toStardewWeather(weather.weather_code)}</span>
             <span className="chip">{season}</span>
           </div>
-          <StardewInfo
-            fish={fish}
-            fishError={fishError}
-            season={season}
-            weather={toStardewWeather(weather.weather_code)}
-          />
+
+          <p className="note">Live weather from Open-Meteo. Reload to update.</p>
+
+          <StardewInfo 
+            fish={fish} 
+            fishError={fishError} 
+            crops={crops} 
+            cropsError={cropsError} 
+            season={season} 
+            weather={toStardewWeather(weather.weather_code)} 
+            />
         </>
       )}
     </Panel>
