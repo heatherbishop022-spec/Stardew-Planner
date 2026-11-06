@@ -5,6 +5,7 @@ import RealPanel from './components/RealPanel'
 import { useForage } from './hooks/useForage'
 import Scenery from './components/Scenery'
 import { useDaylight } from './hooks/useDaylight'
+import Footer from './components/Footer'
 
 function App() {
   const [fish, setFish] = useState([])
@@ -36,6 +37,7 @@ function App() {
         <GamePanel {...shared} />
         <RealPanel {...shared} />
       </div>
+      <Footer />
     </main>
   )
 }

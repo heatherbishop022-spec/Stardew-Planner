@@ -1,5 +1,17 @@
+/* ==========================================================
+   Stardew Valley Planner: styles
+   1 Theme   2 Page   3 Layout & panels   4 Controls & info
+   5 Tabs    6 Cards  7 Tasks             8 Calendar
+   9 Scenery & weather on the background
+   ========================================================== */
+
+
+/* ---------- 1. Theme ---------- */
+
 :root {
   color-scheme: light dark;
+
+  /* app colors (light) */
   --bg: #f6f3ea;
   --surface: #ffffff;
   --text: #2b2b26;
@@ -9,8 +21,29 @@
   --game-bg: #e5eed9;
   --real: #2f6f9f;
   --real-bg: #dcebf6;
+
+  /* scenery (day) */
+  --sky-top: #7ec8f2;
+  --sky-bottom: #d8f1ff;
+  --cloud: #ffffff;
+  --sun: #ffd84a;
+  --hill-far: #8fd17c;
+  --hill-near: #6cb95b;
+  --grass: #52a447;
+  --grass-dark: #3d8a38;
+  --trunk: #7a4b2a;
+  --leaf: #3f9a3c;
+  --flower-a: #ff8fb1;
+  --flower-b: #ffe066;
+
+  /* weather layers */
+  --wx-tint: #8a97a6;
+  --wx-cloud: #aab4bf;
+  --rain: #7fb2e5;
+  --snow: #ffffff;
 }
 
+/* app colors follow the computer's light/dark setting */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #17181c;
@@ -25,9 +58,32 @@
   }
 }
 
+/* the scenery follows real sunrise and sunset (set by useDaylight) */
+:root[data-time="night"] {
+  --sky-top: #141b3a;
+  --sky-bottom: #3a3f7a;
+  --cloud: #5d6396;
+  --sun: #f3efc8;
+  --hill-far: #2d5a4a;
+  --hill-near: #244a3c;
+  --grass: #1f3f33;
+  --grass-dark: #17302a;
+  --trunk: #4a2f1c;
+  --leaf: #2a6a40;
+  --flower-a: #c46a8a;
+  --flower-b: #c9b45a;
+  --star: #fff7c2;
+  --wx-tint: #0b1022;
+  --wx-cloud: #454b6e;
+  --rain: #6f8fc8;
+}
+
+
+/* ---------- 2. Page ---------- */
+
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--sky-bottom);
   color: var(--text);
   font-family: system-ui, sans-serif;
   line-height: 1.5;
@@ -39,24 +95,41 @@ body {
   padding: 24px 16px;
 }
 
-h1 {
+/* wooden sign title */
+.app h1 {
+  width: fit-content;
+  margin: 24px auto;
+  padding: 8px 24px;
   text-align: center;
-  margin: 0 0 20px;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
+  color: #fff7e0;
+  text-shadow: 2px 2px 0 #5a3519;
+  background: #c98a4b;
+  border: 4px solid #7a4b2a;
+  border-radius: 4px;
+  box-shadow: 0 5px 0 #5a3519;
 }
+
+
+/* ---------- 3. Layout & panels ---------- */
 
 .columns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .panel {
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--border);
   border-top: 4px solid var(--accent);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 .panel-game {
@@ -67,6 +140,44 @@ h1 {
 .panel-real {
   --accent: var(--real);
   --accent-bg: var(--real-bg);
+}
+
+.panel-closed {
+  align-self: start;
+}
+
+/* seasonal panels: a pixel strip along the top plus a soft tint fading down */
+.panel[data-season="Spring"] {
+  --s1: #ff9ec4;
+  --s2: #9be37a;
+  --tint: rgba(255, 158, 196, 0.14);
+}
+
+.panel[data-season="Summer"] {
+  --s1: #ffd23f;
+  --s2: #57c25a;
+  --tint: rgba(255, 210, 63, 0.14);
+}
+
+.panel[data-season="Fall"] {
+  --s1: #e8832a;
+  --s2: #b5452a;
+  --tint: rgba(232, 131, 42, 0.16);
+}
+
+.panel[data-season="Winter"] {
+  --s1: #ffffff;
+  --s2: #a9d8ff;
+  --tint: rgba(169, 216, 255, 0.16);
+}
+
+.panel[data-season] {
+  background-image:
+    repeating-linear-gradient(90deg, var(--s1) 0 8px, var(--s2) 8px 16px),
+    linear-gradient(var(--tint), transparent);
+  background-size: 100% 6px, 100% 200px;
+  background-position: top, top;
+  background-repeat: no-repeat;
 }
 
 .panel-header {
@@ -88,24 +199,50 @@ h1 {
   background: var(--bg);
 }
 
+/* the title sits inside a button, which doesn't inherit fonts, so it is set here */
 .panel-title {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
 }
 
 .panel-tag {
+  font-family: system-ui, sans-serif;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   padding: 2px 10px;
   border-radius: 999px;
   background: var(--accent-bg);
   color: var(--accent);
 }
 
+/* the body stretches so the card list can fill the panel (see .fish-scroll) */
 .panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   padding: 0 16px 16px;
 }
+
+.info-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* pixel headings (card names, calendar day titles) */
+.panel h3,
+.panel h4 {
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+
+/* ---------- 4. Controls & info ---------- */
 
 .controls {
   display: flex;
@@ -119,11 +256,14 @@ h1 {
   flex-direction: column;
   flex: 1;
   gap: 4px;
+  min-width: 0;
   font-size: 12px;
   color: var(--muted);
 }
 
 .dropdown select {
+  width: 100%;
+  min-width: 0;
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -150,6 +290,21 @@ h1 {
   font-size: 14px;
 }
 
+.note {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--muted);
+  overflow: hidden;
+}
+
+.note-tall {
+  height: 60px;
+  align-items: flex-start;
+}
+
 .info-title {
   margin: 0;
   font-size: 16px;
@@ -172,8 +327,110 @@ h1 {
   color: #c0392b;
 }
 
+/* Livin' Off The Land tip box */
+.tip-box {
+  display: flex;
+  flex-direction: column;
+  height: 140px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.tip-text {
+  flex: 1;
+  margin: 0;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.tip-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tip-next {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* villager portraits */
+.portrait {
+  display: block;
+  width: 48px;
+  height: 48px;
+  margin-top: 6px;
+  border-radius: 6px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.portrait-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+  image-rendering: auto;
+}
+
+
+/* ---------- 5. Tabs ---------- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.tab {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.tab.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tab-extra {
+  height: 28px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.tab-extra .toggle {
+  margin: 0;
+}
+
+
+/* ---------- 6. Cards (fish, crops, forage) ---------- */
+
+/* fills whatever room is left in the panel, so both panels end evenly */
 .fish-scroll {
-  height: 360px;
+  flex: 1 1 0;
+  min-height: 360px;
   overflow-y: auto;
 }
 
@@ -225,130 +482,8 @@ h1 {
   color: var(--accent);
 }
 
-.note {
-  height: 40px;
-  margin: 0 0 10px;
-  font-size: 13px;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
 
-.dropdown {
-  min-width: 0;
-}
-
-.dropdown select {
-  width: 100%;
-  min-width: 0;
-}
-
-.tabs {
-  display: flex;
-  gap: 6px;
-  margin: 8px 0;
-}
-
-.tab {
-  padding: 5px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.tab.active {
-  background: var(--accent-bg);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.tab-extra {
-  height: 28px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.tab-extra .toggle {
-  margin: 0;
-}
-
-.note-tall {
-  height: 60px;
-  align-items: flex-start;
-}
-.columns {
-  align-items: stretch;
-}
-
-.panel-closed {
-  align-self: start;
-}
-
-.portrait {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  image-rendering: pixelated;
-  margin-top: 6px;
-  border-radius: 6px;
-  display: block;
-}
-
-.portrait-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-weight: 600;
-  image-rendering: auto;
-}
-
-.tip-box {
-  display: flex;
-  flex-direction: column;
-  height: 140px;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.tip-text {
-  flex: 1;
-  margin: 0;
-  overflow-y: auto;
-  font-size: 13px;
-}
-
-.tip-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.tip-next {
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.tabs {
-  flex-wrap: wrap;
-}
+/* ---------- 7. Tasks ---------- */
 
 .tasks-wrap {
   display: flex;
@@ -367,41 +502,62 @@ h1 {
   flex: 1 1 100%;
 }
 
+/* form and edit controls share one look and one height */
 .task-form input,
 .task-form select,
 .task-edit input,
 .task-edit select {
+  height: 36px;
+  box-sizing: border-box;
+  min-width: 0;
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
+  font-family: inherit;
   font-size: 14px;
-  min-width: 0;
 }
 
 .add-btn {
+  height: 36px;
+  box-sizing: border-box;
   padding: 6px 14px;
   border-radius: 8px;
   border: 1px solid var(--accent);
   background: var(--accent-bg);
   color: var(--accent);
   cursor: pointer;
+  font-family: inherit;
   font-size: 14px;
 }
 
+.repeat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.task-form .repeat-toggle input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+}
+
 .task-toolbar {
-  margin-bottom: 8px;
   max-width: 180px;
+  margin-bottom: 8px;
 }
 
 .task-list {
   flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding-right: 2px;
+  overflow-y: auto;
 }
 
 .task {
@@ -445,6 +601,10 @@ h1 {
   text-decoration: line-through;
 }
 
+.task-focus {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
 .task-body {
   min-width: 0;
 }
@@ -483,29 +643,25 @@ h1 {
   gap: 6px;
 }
 
-.task-form input,
-.task-form select,
-.task-form .add-btn,
-.task-edit input,
-.task-edit select {
-  height: 36px;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 14px;
-}
 
-.tab {
-  white-space: nowrap;
-}
-
-.tab {
-  padding: 5px 10px;
-  font-size: 13px;
-}
+/* ---------- 8. Calendar ---------- */
 
 .cal-wrap {
   height: 360px;
-  overflow-y: auto;
+  overflow: visible;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cal-nav strong {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
 }
 
 .cal-grid {
@@ -532,8 +688,8 @@ h1 {
   border-radius: 8px;
   background: var(--bg);
   color: var(--text);
-  font-size: 13px;
   font-family: inherit;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -567,9 +723,9 @@ h1 {
 }
 
 .dot-task {
+  box-sizing: border-box;
   background: transparent;
   border: 1.5px solid var(--accent);
-  box-sizing: border-box;
 }
 
 .cal-legend {
@@ -580,11 +736,13 @@ h1 {
 }
 
 .cal-detail {
+  max-height: 190px;
   margin-top: 10px;
   padding: 10px 12px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
+  overflow-y: auto;
 }
 
 .cal-detail h4 {
@@ -605,10 +763,10 @@ h1 {
 }
 
 .cal-item .portrait {
+  flex: none;
   width: 36px;
   height: 36px;
   margin-top: 0;
-  flex: none;
 }
 
 .cal-done {
@@ -616,10 +774,11 @@ h1 {
   color: var(--muted);
 }
 
+/* a task in the day detail that jumps to the Tasks tab when clicked */
 .cal-link {
   width: 100%;
-  padding: 4px 6px;
   margin: 4px 0;
+  padding: 4px 6px;
   background: none;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -642,87 +801,8 @@ h1 {
   white-space: nowrap;
 }
 
-.task-focus {
-  box-shadow: 0 0 0 2px var(--accent);
-}
 
-.cal-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.cal-nav strong {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-}
-
-.repeat-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.task-form .repeat-toggle input {
-  width: 16px;
-  height: 16px;
-  padding: 0;
-}
-
-.cal-wrap {
-  max-height: none;
-  overflow: visible;
-}
-
-.cal-detail {
-  max-height: 190px;
-  overflow-y: auto;
-}
-
-.task-edit {
-  flex-wrap: wrap;
-}
-
-/* ---------- Stardew-style scenery ---------- */
-:root {
-  --sky-top: #7ec8f2;
-  --sky-bottom: #d8f1ff;
-  --cloud: #ffffff;
-  --sun: #ffd84a;
-  --hill-far: #8fd17c;
-  --hill-near: #6cb95b;
-  --grass: #52a447;
-  --grass-dark: #3d8a38;
-  --trunk: #7a4b2a;
-  --leaf: #3f9a3c;
-  --flower-a: #ff8fb1;
-  --flower-b: #ffe066;
-}
-
-:root[data-time="night"] {
-      --sky-top: #141b3a;
-      --sky-bottom: #3a3f7a;
-      --cloud: #5d6396;
-      --sun: #f3efc8;
-      --hill-far: #2d5a4a;
-      --hill-near: #244a3c;
-      --grass: #1f3f33;
-      --grass-dark: #17302a;
-      --trunk: #4a2f1c;
-      --leaf: #2a6a40;
-      --flower-a: #c46a8a;
-      --flower-b: #c9b45a;
-      --star: #fff7c2;
-}
-
-
-body {
-  background: var(--sky-bottom);
-}
+/* ---------- 9. Scenery & weather on the background ---------- */
 
 .scenery {
   position: fixed;
@@ -732,206 +812,91 @@ body {
   z-index: -1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .clouds {
-    animation: drift 90s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes drift {
-  from {
-    transform: translateX(-30px);
-  }
-
-  to {
-    transform: translateX(30px);
-  }
-}
-
-/* wooden sign title */
-.app h1 {
-  width: fit-content;
-  margin: 24px auto;
-  padding: 8px 24px;
-  font-family: 'Pixelify Sans', system-ui, sans-serif;
-  font-weight: 700;
-  color: #fff7e0;
-  text-shadow: 2px 2px 0 #5a3519;
-  background: #c98a4b;
-  border: 4px solid #7a4b2a;
-  border-radius: 4px;
-  box-shadow: 0 5px 0 #5a3519;
-}
-
-/* pixel headings and a little lift for the panels */
-.panel h2,
-.panel h3,
-.panel h4 {
-  font-family: 'Pixelify Sans', system-ui, sans-serif;
-  font-weight: 700;
-}
-
-.panel {
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* panel title: pixel font (the title lives inside a button, which doesn't inherit fonts) */
-.panel-title {
-  font-family: 'Pixelify Sans', system-ui, sans-serif;
-  font-weight: 700;
-}
-
-.panel-tag {
-  font-family: system-ui, sans-serif;
-  font-weight: 400;
-}
-
-/* seasonal panels: a pixel strip along the top plus a soft tint fading down */
-.panel[data-season="Spring"] {
-  --s1: #ff9ec4;
-  --s2: #9be37a;
-  --tint: rgba(255, 158, 196, 0.14);
-}
-
-.panel[data-season="Summer"] {
-  --s1: #ffd23f;
-  --s2: #57c25a;
-  --tint: rgba(255, 210, 63, 0.14);
-}
-
-.panel[data-season="Fall"] {
-  --s1: #e8832a;
-  --s2: #b5452a;
-  --tint: rgba(232, 131, 42, 0.16);
-}
-
-.panel[data-season="Winter"] {
-  --s1: #ffffff;
-  --s2: #a9d8ff;
-  --tint: rgba(169, 216, 255, 0.16);
-}
-
-.panel[data-season] {
-  background-image:
-    repeating-linear-gradient(90deg, var(--s1) 0 8px, var(--s2) 8px 16px),
-    linear-gradient(var(--tint), transparent);
-  background-size: 100% 6px, 100% 200px;
-  background-position: top, top;
-  background-repeat: no-repeat;
-}
-
-/* ---------- weather on the background ---------- */
-:root {
-  --wx-tint: #8a97a6;
-  --wx-cloud: #aab4bf;
-  --rain: #7fb2e5;
-  --snow: #ffffff;
-}
-
-:root[data-time="night"] {
-  --wx-tint: #0b1022;
-  --wx-cloud: #454b6e;
-  --rain: #6f8fc8;
-}
-
+/* Each weather sets a few "--o-*" opacity values; the layers read them.
+   Anything not set falls back: weather layers hidden, sun and stars shown. */
 .wx-tint {
   fill: var(--wx-tint);
+  opacity: var(--o-tint, 0);
 }
 
 .wx-clouds {
   fill: var(--wx-cloud);
+  opacity: var(--o-clouds, 0);
+}
+
+.wx-rain {
+  opacity: var(--o-rain, 0);
+}
+
+.wx-snow {
+  opacity: var(--o-snow, 0);
+}
+
+.wx-flash {
+  opacity: 0;
+}
+
+.sun-body {
+  opacity: var(--o-sun, 1);
+}
+
+.stars {
+  opacity: var(--o-stars, 1);
 }
 
 .wx-tint,
 .wx-clouds,
 .wx-rain,
 .wx-snow,
-.wx-flash,
 .sun-body,
 .stars {
   transition: opacity 1.5s ease;
 }
 
-.wx-tint,
-.wx-clouds,
-.wx-rain,
-.wx-snow,
-.wx-flash {
-  opacity: 0;
+:root[data-weather="cloudy"] {
+  --o-tint: 0.15;
+  --o-clouds: 1;
+  --o-sun: 0.5;
+  --o-stars: 0.4;
 }
 
-:root[data-weather="cloudy"] .wx-tint {
-  opacity: 0.15;
+:root[data-weather="fog"] {
+  --o-tint: 0.45;
+  --o-clouds: 1;
+  --o-sun: 0;
+  --o-stars: 0;
 }
 
-:root[data-weather="cloudy"] .wx-clouds {
-  opacity: 1;
+:root[data-weather="rain"] {
+  --o-tint: 0.35;
+  --o-clouds: 1;
+  --o-rain: 1;
+  --o-sun: 0;
+  --o-stars: 0;
 }
 
-:root[data-weather="cloudy"] .sun-body {
-  opacity: 0.5;
+:root[data-weather="storm"] {
+  --o-tint: 0.55;
+  --o-clouds: 1;
+  --o-rain: 1;
+  --o-sun: 0;
+  --o-stars: 0;
 }
 
-:root[data-weather="cloudy"] .stars {
-  opacity: 0.4;
+:root[data-weather="snow"] {
+  --o-tint: 0.25;
+  --o-clouds: 1;
+  --o-snow: 1;
+  --o-sun: 0;
+  --o-stars: 0;
 }
 
-:root[data-weather="fog"] .wx-tint {
-  opacity: 0.45;
-}
-
-:root[data-weather="fog"] .wx-clouds {
-  opacity: 1;
-}
-
-:root[data-weather="fog"] .sun-body,
-:root[data-weather="fog"] .stars {
-  opacity: 0;
-}
-
-:root[data-weather="rain"] .wx-tint {
-  opacity: 0.35;
-}
-
-:root[data-weather="rain"] .wx-clouds,
-:root[data-weather="rain"] .wx-rain {
-  opacity: 1;
-}
-
-:root[data-weather="rain"] .sun-body,
-:root[data-weather="rain"] .stars {
-  opacity: 0;
-}
-
-:root[data-weather="storm"] .wx-tint {
-  opacity: 0.55;
-}
-
-:root[data-weather="storm"] .wx-clouds,
-:root[data-weather="storm"] .wx-rain {
-  opacity: 1;
-}
-
-:root[data-weather="storm"] .sun-body,
-:root[data-weather="storm"] .stars {
-  opacity: 0;
-}
-
-:root[data-weather="snow"] .wx-tint {
-  opacity: 0.25;
-}
-
-:root[data-weather="snow"] .wx-clouds,
-:root[data-weather="snow"] .wx-snow {
-  opacity: 1;
-}
-
-:root[data-weather="snow"] .sun-body,
-:root[data-weather="snow"] .stars {
-  opacity: 0;
-}
-
+/* motion (switched off for people who prefer reduced motion) */
 @media (prefers-reduced-motion: no-preference) {
+  .clouds {
+    animation: drift 90s ease-in-out infinite alternate;
+  }
+
   .wx-rain {
     animation: fall 0.5s linear infinite;
   }
@@ -942,6 +907,16 @@ body {
 
   :root[data-weather="storm"] .wx-flash {
     animation: flash 7s infinite;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-30px);
+  }
+
+  to {
+    transform: translateX(30px);
   }
 }
 
@@ -990,29 +965,24 @@ body {
   }
 }
 
-/* let the card list stretch to fill the panel so both panels end evenly */
-.panel {
-  display: flex;
-  flex-direction: column;
+/* ---------- Footer ---------- */
+
+.footer {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
 }
 
-.panel-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+.footer p {
+  margin: 4px 0;
 }
 
-.info-root {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.fish-scroll {
-  flex: 1 1 0;
-  min-height: 360px;
-  max-height: none;
-  overflow-y: auto;
+.footer a {
+  color: var(--real);
 }

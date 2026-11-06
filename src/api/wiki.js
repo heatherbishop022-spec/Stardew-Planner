@@ -162,8 +162,8 @@ export async function fetchCrops() {
   }
 
    const original = [...crops]
-  const added = []
-  const notFound = []
+   const added = []
+   const notFound = []
 
   Object.entries(MULTI_SEASON).forEach(([key, seasons]) => {
     const found = original.find((c) => c.name.toLowerCase() === key)
