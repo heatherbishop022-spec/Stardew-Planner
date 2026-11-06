@@ -62,7 +62,7 @@ function RealPanel({ fish, fishError, crops, cropsError, forage, forageError }) 
   }
 
   return (
-    <Panel title="Real Life" tag="Live data" variant="real">
+    <Panel title="Real Life" tag="Live data" variant="real" season={season}>
       <div className="summary">
         {live && <span className="chip">{live.temperature_2m}°F</span>}
         {stardewWeather && <span className="chip">{stardewWeather}</span>}

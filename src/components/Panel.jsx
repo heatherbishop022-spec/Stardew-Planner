@@ -1,10 +1,13 @@
 import { useState } from 'react'
 
-function Panel({ title, tag, variant, defaultOpen = true, children }) {
+function Panel({ title, tag, variant, season, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-        <section className={`panel panel-${variant}${open ? '' : ' panel-closed'}`}>
+    <section
+      className={`panel panel-${variant}${open ? '' : ' panel-closed'}`}
+      data-season={season}
+    >
       <button
         className="panel-header"
         onClick={() => setOpen(!open)}

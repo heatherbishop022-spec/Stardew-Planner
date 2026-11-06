@@ -686,3 +686,333 @@ h1 {
 .task-edit {
   flex-wrap: wrap;
 }
+
+/* ---------- Stardew-style scenery ---------- */
+:root {
+  --sky-top: #7ec8f2;
+  --sky-bottom: #d8f1ff;
+  --cloud: #ffffff;
+  --sun: #ffd84a;
+  --hill-far: #8fd17c;
+  --hill-near: #6cb95b;
+  --grass: #52a447;
+  --grass-dark: #3d8a38;
+  --trunk: #7a4b2a;
+  --leaf: #3f9a3c;
+  --flower-a: #ff8fb1;
+  --flower-b: #ffe066;
+}
+
+:root[data-time="night"] {
+      --sky-top: #141b3a;
+      --sky-bottom: #3a3f7a;
+      --cloud: #5d6396;
+      --sun: #f3efc8;
+      --hill-far: #2d5a4a;
+      --hill-near: #244a3c;
+      --grass: #1f3f33;
+      --grass-dark: #17302a;
+      --trunk: #4a2f1c;
+      --leaf: #2a6a40;
+      --flower-a: #c46a8a;
+      --flower-b: #c9b45a;
+      --star: #fff7c2;
+}
+
+
+body {
+  background: var(--sky-bottom);
+}
+
+.scenery {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .clouds {
+    animation: drift 90s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-30px);
+  }
+
+  to {
+    transform: translateX(30px);
+  }
+}
+
+/* wooden sign title */
+.app h1 {
+  width: fit-content;
+  margin: 24px auto;
+  padding: 8px 24px;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
+  color: #fff7e0;
+  text-shadow: 2px 2px 0 #5a3519;
+  background: #c98a4b;
+  border: 4px solid #7a4b2a;
+  border-radius: 4px;
+  box-shadow: 0 5px 0 #5a3519;
+}
+
+/* pixel headings and a little lift for the panels */
+.panel h2,
+.panel h3,
+.panel h4 {
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.panel {
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* panel title: pixel font (the title lives inside a button, which doesn't inherit fonts) */
+.panel-title {
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.panel-tag {
+  font-family: system-ui, sans-serif;
+  font-weight: 400;
+}
+
+/* seasonal panels: a pixel strip along the top plus a soft tint fading down */
+.panel[data-season="Spring"] {
+  --s1: #ff9ec4;
+  --s2: #9be37a;
+  --tint: rgba(255, 158, 196, 0.14);
+}
+
+.panel[data-season="Summer"] {
+  --s1: #ffd23f;
+  --s2: #57c25a;
+  --tint: rgba(255, 210, 63, 0.14);
+}
+
+.panel[data-season="Fall"] {
+  --s1: #e8832a;
+  --s2: #b5452a;
+  --tint: rgba(232, 131, 42, 0.16);
+}
+
+.panel[data-season="Winter"] {
+  --s1: #ffffff;
+  --s2: #a9d8ff;
+  --tint: rgba(169, 216, 255, 0.16);
+}
+
+.panel[data-season] {
+  background-image:
+    repeating-linear-gradient(90deg, var(--s1) 0 8px, var(--s2) 8px 16px),
+    linear-gradient(var(--tint), transparent);
+  background-size: 100% 6px, 100% 200px;
+  background-position: top, top;
+  background-repeat: no-repeat;
+}
+
+/* ---------- weather on the background ---------- */
+:root {
+  --wx-tint: #8a97a6;
+  --wx-cloud: #aab4bf;
+  --rain: #7fb2e5;
+  --snow: #ffffff;
+}
+
+:root[data-time="night"] {
+  --wx-tint: #0b1022;
+  --wx-cloud: #454b6e;
+  --rain: #6f8fc8;
+}
+
+.wx-tint {
+  fill: var(--wx-tint);
+}
+
+.wx-clouds {
+  fill: var(--wx-cloud);
+}
+
+.wx-tint,
+.wx-clouds,
+.wx-rain,
+.wx-snow,
+.wx-flash,
+.sun-body,
+.stars {
+  transition: opacity 1.5s ease;
+}
+
+.wx-tint,
+.wx-clouds,
+.wx-rain,
+.wx-snow,
+.wx-flash {
+  opacity: 0;
+}
+
+:root[data-weather="cloudy"] .wx-tint {
+  opacity: 0.15;
+}
+
+:root[data-weather="cloudy"] .wx-clouds {
+  opacity: 1;
+}
+
+:root[data-weather="cloudy"] .sun-body {
+  opacity: 0.5;
+}
+
+:root[data-weather="cloudy"] .stars {
+  opacity: 0.4;
+}
+
+:root[data-weather="fog"] .wx-tint {
+  opacity: 0.45;
+}
+
+:root[data-weather="fog"] .wx-clouds {
+  opacity: 1;
+}
+
+:root[data-weather="fog"] .sun-body,
+:root[data-weather="fog"] .stars {
+  opacity: 0;
+}
+
+:root[data-weather="rain"] .wx-tint {
+  opacity: 0.35;
+}
+
+:root[data-weather="rain"] .wx-clouds,
+:root[data-weather="rain"] .wx-rain {
+  opacity: 1;
+}
+
+:root[data-weather="rain"] .sun-body,
+:root[data-weather="rain"] .stars {
+  opacity: 0;
+}
+
+:root[data-weather="storm"] .wx-tint {
+  opacity: 0.55;
+}
+
+:root[data-weather="storm"] .wx-clouds,
+:root[data-weather="storm"] .wx-rain {
+  opacity: 1;
+}
+
+:root[data-weather="storm"] .sun-body,
+:root[data-weather="storm"] .stars {
+  opacity: 0;
+}
+
+:root[data-weather="snow"] .wx-tint {
+  opacity: 0.25;
+}
+
+:root[data-weather="snow"] .wx-clouds,
+:root[data-weather="snow"] .wx-snow {
+  opacity: 1;
+}
+
+:root[data-weather="snow"] .sun-body,
+:root[data-weather="snow"] .stars {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wx-rain {
+    animation: fall 0.5s linear infinite;
+  }
+
+  .wx-snow {
+    animation: snowfall 5s linear infinite;
+  }
+
+  :root[data-weather="storm"] .wx-flash {
+    animation: flash 7s infinite;
+  }
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(20px);
+  }
+}
+
+@keyframes snowfall {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(24px);
+  }
+}
+
+@keyframes flash {
+
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+
+  92% {
+    opacity: 0.5;
+  }
+
+  94% {
+    opacity: 0;
+  }
+
+  96% {
+    opacity: 0.3;
+  }
+
+  98% {
+    opacity: 0;
+  }
+}
+
+/* let the card list stretch to fill the panel so both panels end evenly */
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.info-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.fish-scroll {
+  flex: 1 1 0;
+  min-height: 360px;
+  max-height: none;
+  overflow-y: auto;
+}

@@ -80,7 +80,7 @@ function StardewInfo({
   }
 
   return (
-    <div>
+    <div className="info-root">
       <p className="info-sub">
         {season} · {weather || 'weather not loaded'}
       </p>
@@ -117,7 +117,7 @@ function StardewInfo({
         {tab === 'crops' && (
           <span>{raining ? 'Rain waters your crops today.' : 'Crops need watering today.'}</span>
         )}
-        {tab === 'forage' && <span>Forage you can find outdoors in {season}.</span>}
+                {tab === 'forage' && <span>Forage you can find outdoors in {season}.</span>}
         {tab === 'calendar' && (
           <span className="cal-legend">
             <span>

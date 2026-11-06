@@ -28,7 +28,7 @@ function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysErr
   }
 
   return (
-    <Panel title="Game Life" tag="You choose" variant="game">
+    <Panel title="Game Life" tag="You choose" variant="game" season={season}>
       <div className="controls">
         <Dropdown label="Season" options={SEASONS} value={season} onChange={changeSeason} />
         <Dropdown
