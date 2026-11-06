@@ -1,22 +1,23 @@
 import { useState } from 'react'
 import FishList from './FishList'
 import CropList from './CropList'
+import ForageList from './ForageList'
 import GameCalendar from './GameCalendar'
 import RealCalendar from './RealCalendar'
 import TaskPanel from './TaskPanel'
-import ForageList from './ForageList'
 import { filterFish, filterCrops, filterForage } from '../utils/stardew'
 
 function StardewInfo({
   world,
   taskApi,
-  fish, fishError,
-  crops, cropsError,
+  fish = [], fishError,
+  crops = [], cropsError,
   forage = [], forageError,
   birthdays = [], birthdaysError,
   season, weather,
 }) {
-  const [tab, setTab] = useState('fish')
+  const isGame = world === 'game'
+  const [tab, setTab] = useState(isGame ? 'fish' : 'calendar')
   const [showGinger, setShowGinger] = useState(false)
   const [focusTaskId, setFocusTaskId] = useState(null)
 
@@ -33,32 +34,31 @@ function StardewInfo({
   const doneTasks = taskApi.tasks.length - openTasks
 
   const tabs = [
-    { id: 'fish', label: 'Fish', count: weather ? visibleFish.length : '–' },
-    { id: 'crops', label: 'Crops', count: visibleCrops.length },
-    { id: 'forage', label: 'Forage', count: visibleForage.length },
+    ...(isGame
+      ? [
+        { id: 'fish', label: 'Fish', count: visibleFish.length },
+        { id: 'crops', label: 'Crops', count: visibleCrops.length },
+        { id: 'forage', label: 'Forage', count: visibleForage.length },
+      ]
+      : []),
     { id: 'calendar', label: 'Calendar' },
     { id: 'tasks', label: 'Tasks', count: openTasks },
   ]
 
-  let body
-  if (tab === 'tasks') {
-    body = null // the task list is rendered below and only hidden, so drafts survive
-  } else if (tab === 'fish' && !weather) {
-    body = <p>Waiting for live weather...</p>
-  } else {
+  let body = null // the task list is rendered below and only hidden, so drafts survive
+  if (tab !== 'tasks') {
     const status = {
       fish: { error: fishError, loading: fish.length === 0 },
       crops: { error: cropsError, loading: crops.length === 0 },
       forage: { error: forageError, loading: forage.length === 0 },
-      calendar:
-        world === 'game'
-          ? { error: birthdaysError, loading: birthdays.length === 0 }
-          : { error: null, loading: false },
+      calendar: isGame
+        ? { error: birthdaysError, loading: birthdays.length === 0 }
+        : { error: null, loading: false },
     }[tab]
 
     if (status.error) body = <p className="error">Error: {status.error}</p>
     else if (status.loading) body = <p>Loading...</p>
-    else if (tab === 'calendar' && world === 'game')
+    else if (tab === 'calendar' && isGame)
       body = (
         <GameCalendar
           season={season}
@@ -80,10 +80,12 @@ function StardewInfo({
   }
 
   return (
-    <div className="info-root">
-      <p className="info-sub">
-        {season} · {weather || 'weather not loaded'}
-      </p>
+    <div>
+      {isGame && (
+        <p className="info-sub">
+          {season} · {weather}
+        </p>
+      )}
 
       <div className="tabs" role="tablist">
         {tabs.map((t) => (
@@ -117,11 +119,11 @@ function StardewInfo({
         {tab === 'crops' && (
           <span>{raining ? 'Rain waters your crops today.' : 'Crops need watering today.'}</span>
         )}
-                {tab === 'forage' && <span>Forage you can find outdoors in {season}.</span>}
+        {tab === 'forage' && <span>Forage you can find outdoors in {season}.</span>}
         {tab === 'calendar' && (
           <span className="cal-legend">
             <span>
-              <i className="dot" /> {world === 'game' ? 'birthday or festival' : 'holiday'}
+              <i className="dot" /> {isGame ? 'birthday or festival' : 'holiday'}
             </span>
             <span>
               <i className="dot dot-task" /> task

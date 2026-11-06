@@ -58,6 +58,41 @@
   }
 }
 
+/* the scenery follows the REAL season (set from today's date) */
+:root[data-real-season="Spring"] {
+  --hill-far: #9bdc86;
+  --hill-near: #78c864;
+  --grass: #5fb552;
+  --grass-dark: #489a40;
+  --leaf: #6fc45f;
+  --flower-a: #ff9ec4;
+  --flower-b: #ffffff;
+}
+
+:root[data-real-season="Fall"] {
+  --sky-top: #8fb8e0;
+  --sky-bottom: #f5e6c8;
+  --hill-far: #d9a441;
+  --hill-near: #c4742a;
+  --grass: #a08a38;
+  --grass-dark: #7d6a2a;
+  --leaf: #d9622b;
+  --flower-a: #b5452a;
+  --flower-b: #e8b84a;
+}
+
+:root[data-real-season="Winter"] {
+  --sky-top: #a9c7e0;
+  --sky-bottom: #e8f1f8;
+  --hill-far: #dbe8f0;
+  --hill-near: #c5d8e6;
+  --grass: #eef5fa;
+  --grass-dark: #bcd0de;
+  --leaf: #e8f2f8;
+  --flower-a: #ffffff;
+  --flower-b: #a9d8ff;
+}
+
 /* the scenery follows real sunrise and sunset (set by useDaylight) */
 :root[data-time="night"] {
   --sky-top: #141b3a;
@@ -78,6 +113,26 @@
   --rain: #6f8fc8;
 }
 
+:root[data-time="night"][data-real-season="Fall"] {
+  --hill-far: #5a4a2a;
+  --hill-near: #4a3520;
+  --grass: #3d3a22;
+  --grass-dark: #2f2c1a;
+  --leaf: #8a4020;
+  --flower-a: #7a3a2a;
+  --flower-b: #8a7a3a;
+}
+
+:root[data-time="night"][data-real-season="Winter"] {
+  --hill-far: #44527a;
+  --hill-near: #3a4668;
+  --grass: #7b88ad;
+  --grass-dark: #5d6a90;
+  --leaf: #8794b8;
+  --flower-a: #cfd8f0;
+  --flower-b: #7f9bd0;
+}
+
 
 /* ---------- 2. Page ---------- */
 
@@ -90,7 +145,7 @@ body {
 }
 
 .app {
-  max-width: 1000px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 24px 16px;
 }
@@ -114,64 +169,44 @@ body {
 
 /* ---------- 3. Layout & panels ---------- */
 
-.columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
-  align-items: stretch;
-}
-
-.panel {
+/* the one panel that holds everything */
+.planner {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  padding: 24px 16px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-top: 4px solid var(--accent);
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
 }
 
-.panel-game {
-  --accent: var(--game);
-  --accent-bg: var(--game-bg);
-}
-
-.panel-real {
-  --accent: var(--real);
-  --accent-bg: var(--real-bg);
-}
-
-.panel-closed {
-  align-self: start;
-}
-
-/* seasonal panels: a pixel strip along the top plus a soft tint fading down */
-.panel[data-season="Spring"] {
+/* seasonal panel: a pixel strip along the top plus a soft tint fading down */
+.planner[data-season="Spring"] {
   --s1: #ff9ec4;
   --s2: #9be37a;
   --tint: rgba(255, 158, 196, 0.14);
 }
 
-.panel[data-season="Summer"] {
+.planner[data-season="Summer"] {
   --s1: #ffd23f;
   --s2: #57c25a;
   --tint: rgba(255, 210, 63, 0.14);
 }
 
-.panel[data-season="Fall"] {
+.planner[data-season="Fall"] {
   --s1: #e8832a;
   --s2: #b5452a;
   --tint: rgba(232, 131, 42, 0.16);
 }
 
-.panel[data-season="Winter"] {
+.planner[data-season="Winter"] {
   --s1: #ffffff;
   --s2: #a9d8ff;
   --tint: rgba(169, 216, 255, 0.16);
 }
 
-.panel[data-season] {
+.planner[data-season] {
   background-image:
     repeating-linear-gradient(90deg, var(--s1) 0 8px, var(--s2) 8px 16px),
     linear-gradient(var(--tint), transparent);
@@ -180,7 +215,28 @@ body {
   background-repeat: no-repeat;
 }
 
-.panel-header {
+/* blue = real life, green = game: same accents as before */
+.section-real,
+.outside {
+  --accent: var(--real);
+  --accent-bg: var(--real-bg);
+}
+
+.section-game {
+  --accent: var(--game);
+  --accent-bg: var(--game-bg);
+}
+
+.section,
+.outside {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--accent);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.section-header {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -195,20 +251,24 @@ body {
   text-align: left;
 }
 
-.panel-header:hover {
+.section-header:hover {
   background: var(--bg);
 }
 
-/* the title sits inside a button, which doesn't inherit fonts, so it is set here */
-.panel-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* titles sit inside a button, which doesn't inherit fonts, so it is set here */
+.section-title,
+.outside-title {
   font-family: 'Pixelify Sans', system-ui, sans-serif;
   font-weight: 700;
 }
 
-.panel-tag {
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-tag {
   font-family: system-ui, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -218,30 +278,39 @@ body {
   color: var(--accent);
 }
 
-/* the body stretches so the card list can fill the panel (see .fish-scroll) */
-.panel-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+.section-body {
   padding: 0 16px 16px;
 }
 
-.info-root {
-  flex: 1;
+/* "Outside right now" */
+.outside {
+  padding: 12px 16px;
+}
+
+.outside-head {
   display: flex;
-  flex-direction: column;
-  min-height: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.outside-title {
+  margin: 0 6px 0 0;
+  font-size: 18px;
+}
+
+.outside-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* pixel headings (card names, calendar day titles) */
-.panel h3,
-.panel h4 {
+.planner h3,
+.planner h4 {
   font-family: 'Pixelify Sans', system-ui, sans-serif;
   font-weight: 700;
 }
-
-
 /* ---------- 4. Controls & info ---------- */
 
 .controls {
@@ -435,8 +504,7 @@ body {
 
 /* fills whatever room is left in the panel, so both panels end evenly */
 .fish-scroll {
-  flex: 1 1 0;
-  min-height: 360px;
+  height: 360px;
   overflow-y: auto;
 }
 

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { fetchFish, fetchCrops, fetchBirthdays } from './api/wiki'
-import GamePanel from './components/GamePanel'
-import RealPanel from './components/RealPanel'
+import Planner from './components/Planner'
 import { useForage } from './hooks/useForage'
 import Scenery from './components/Scenery'
 import { useDaylight } from './hooks/useDaylight'
 import Footer from './components/Footer'
+import { toStardewSeason } from './utils/stardew'
 
 function App() {
   const [fish, setFish] = useState([])
@@ -28,15 +28,15 @@ function App() {
     document.documentElement.dataset.time = timeOfDay
     document.documentElement.dataset.weather = weather
   }, [timeOfDay, weather])
+  useEffect(() => {
+    document.documentElement.dataset.realSeason = toStardewSeason(new Date())
+  }, [])
 
   return (
     <main className="app">
       <Scenery />
       <h1>Stardew Valley Planner</h1>
-      <div className="columns">
-        <GamePanel {...shared} />
-        <RealPanel {...shared} />
-      </div>
+      <Planner {...shared} />
       <Footer />
     </main>
   )
