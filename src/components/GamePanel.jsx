@@ -46,9 +46,21 @@ function GamePanel({ fish, fishError, crops, cropsError, birthdays, birthdaysErr
         <p className="tip-text">{tip.tip}</p>
         <div className="tip-footer">
           <span>Livin' Off The Land · {tip.date}</span>
-          <button className="tip-next" onClick={() => setTipIndex(tipIndex + 1)}>
-            Next tip
-          </button>
+          <span className="tip-buttons">
+            <button
+              className="tip-next"
+              onClick={() =>
+                setTipIndex(
+                  ((tipIndex % seasonTips.length) - 1 + seasonTips.length) % seasonTips.length
+                )
+              }
+            >
+              ‹ Previous
+            </button>
+            <button className="tip-next" onClick={() => setTipIndex(tipIndex + 1)}>
+              Next tip ›
+            </button>
+          </span>
         </div>
       </div>
 

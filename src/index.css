@@ -346,6 +346,12 @@ body {
   font-size: 13px;
 }
 
+.tip-buttons {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 .tip-footer {
   display: flex;
   justify-content: space-between;
@@ -767,6 +773,42 @@ body {
   width: 36px;
   height: 36px;
   margin-top: 0;
+}
+
+.cal-birthday {
+  align-items: flex-start;
+}
+
+.cal-birthday-info {
+  min-width: 0;
+}
+
+.loves {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin-top: 4px;
+}
+
+.loves-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.love-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 8px 1px 3px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.love-item img {
+  image-rendering: pixelated;
 }
 
 .cal-done {

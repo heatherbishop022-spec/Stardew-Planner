@@ -47,12 +47,25 @@ function GameCalendar({ season, birthdays, taskApi, onOpenTask }) {
                                 <span>{f.name}</span>
                             </div>
                         ))}
-                        {dayBirthdays.map((b) => (
-                            <div key={b.name} className="cal-item">
-                                <Portrait name={b.name} src={b.portrait || b.icon} />
-                                <span>{b.name}'s birthday</span>
-                            </div>
-                        ))}
+                            {dayBirthdays.map((b) => (
+                                <div key={b.name} className="cal-item cal-birthday">
+                                    <Portrait name={b.name} src={b.portrait || b.icon} />
+                                    <div className="cal-birthday-info">
+                                        <span>{b.name}'s birthday</span>
+                                        {b.loves && b.loves.length > 0 && (
+                                            <div className="loves">
+                                                <span className="loves-label">Loves:</span>
+                                                {b.loves.map((g) => (
+                                                    <span key={g.name} className="love-item">
+                                                        {g.icon && <img src={g.icon} alt="" width="20" height="20" />}
+                                                        {g.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                             {dayTasks.map((t) => (
                                 <button key={t.id} className="cal-item cal-link" onClick={() => onOpenTask(t.id)}>
                                     <span className="tag">{t.done ? 'Done' : t.priority}</span>

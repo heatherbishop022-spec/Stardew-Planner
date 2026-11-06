@@ -206,7 +206,7 @@ async function fetchPageDoc(page) {
   return doc
 }
 
-export async function fetchBirthdays() {
+async function fetchBirthdayList() {
   const [calendar, villagers] = await Promise.all([
     fetchPageDoc('Calendar'),
     fetchPageDoc('Villagers').catch(() => null),
@@ -345,4 +345,43 @@ export async function fetchForage() {
   }
 
   return [...items.values()].sort((a, b) => a.name.localeCompare(b.name))
+}
+
+const GIFT_ICON_BASE = 'https://stardewvalleywiki.com'
+
+// { Haley: [{ name: 'Coconut', icon: '...' }, ...], Universals: [...], ... }
+export async function fetchGifts() {
+  const doc = await fetchPageDoc('List_of_All_Gifts')
+  const gifts = {}
+
+  for (const row of doc.querySelectorAll('table.sortable tr')) {
+    const cells = [...row.children]
+    if (cells.length < 3) continue
+
+    const name = cells[0].textContent.replace(/\s+/g, ' ').trim()
+    if (!name || name === 'Villager') continue
+
+    gifts[name] = [...cells[2].querySelectorAll('li')]
+      .map((li) => {
+        const a = li.querySelector('a')
+        const img = li.querySelector('img')
+        return {
+          name: a ? a.getAttribute('title') || a.textContent.trim() : li.textContent.trim(),
+          icon: img ? GIFT_ICON_BASE + img.getAttribute('src') : null,
+        }
+      })
+      .filter((g) => g.name)
+  }
+
+  return gifts
+}
+
+// The birthday list plus each villager's loved gifts. If the gifts page
+// fails to load, birthdays still work (they just have no gifts).
+export async function fetchBirthdays() {
+  const [birthdays, gifts] = await Promise.all([
+    fetchBirthdayList(),
+    fetchGifts().catch(() => ({})),
+  ])
+  return birthdays.map((b) => ({ ...b, loves: gifts[b.name] || [] }))
 }
