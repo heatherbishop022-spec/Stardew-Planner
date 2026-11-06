@@ -15,9 +15,10 @@ function CropList({ crops }) {
             <p className="meta">Up to {c.maxPrice}g at best quality</p>
           )}
           {c.bundle && (
-            <span className="tag" title={c.bundles.join(', ')}>
-              Bundle crop
-            </span>
+            <details className="bundle">
+              <summary className="tag">Bundle crop</summary>
+              <p className="meta">{c.bundles.join(', ')}</p>
+            </details>
           )}
         </Card>
       ))}

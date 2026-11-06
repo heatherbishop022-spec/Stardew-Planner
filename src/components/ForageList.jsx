@@ -17,9 +17,10 @@ function ForageList({ forage }) {
                             </p>
                         )}
                         {f.bundle && (
-                            <span className="tag" title={f.bundles.join(', ')}>
-                                Bundle forage
-                            </span>
+                            <details className="bundle">
+                                <summary className="tag">Bundle forage</summary>
+                                <p className="meta">{f.bundles.join(', ')}</p>
+                            </details>
                         )}
                     </Card>
                 )

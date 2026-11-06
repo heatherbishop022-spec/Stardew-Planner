@@ -556,6 +556,24 @@ body {
   color: var(--accent);
 }
 
+/* tap-to-expand bundle tag (works on phones, where hover doesn't exist) */
+.bundle summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.bundle summary::-webkit-details-marker {
+  display: none;
+}
+
+.bundle summary::after {
+  content: ' \25BE';
+}
+
+.bundle[open] summary::after {
+  content: ' \25B4';
+}
+
 
 /* ---------- 7. Tasks ---------- */
 
